@@ -1,0 +1,29 @@
+{
+    "manifest_version": 3,
+    "name": "Project InfoSec",
+    "description": "Finds most likely url from history",
+    "version": "1.0",
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+        "history",
+        "tabs",
+        "activeTab",
+        "background",
+        "scripting",
+        "storage"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "artyzh@inbox.ru",
+            "strict_min_version": "42.0"
+        }
+    }
+}
