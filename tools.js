@@ -73,3 +73,31 @@ async function find(target, callback) {
     dist = minit;
     return callback(url, minit, first, second);
 }
+
+async function comparation(url1, url2) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url1, false);
+    //xhr.responseType = 'document';
+    xhr.send();
+    let doc1 = xhr.responseText;
+    //xhr.open("GET", url2, false);
+    //xhr.send();
+    //let doc2 = xhr.responseXML;
+    //console.log(doc1);
+    e = getStyles(doc1)
+    return e;
+    //console.log(doc2);
+}
+
+function getStyles(string) {
+    let dom = (new DOMParser()).parseFromString(string, "text/html");
+    console.log(typeof dom);
+    let styles = [];
+    dom.querySelectorAll("[style]").forEach(e => {
+        styles = [...styles, ...e.getAttribute("style").split(';')];
+    });
+    dom.querySelectorAll("style").forEach(e => {
+        styles = [...styles, ...e.innerHTML.match(/\{.+?\}/sgi).map(r => r.slice(1, r.length - 1).split(";").flat()).flat()]
+    });
+    return styles;
+}

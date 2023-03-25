@@ -86,40 +86,6 @@ function init(item) {
 var trust = {};
 chrome.storage.local.get(callback = (e) => trust = e);
 
-
-// chrome.webRequest.onBeforeRequest.addListener(
-//     async function (details) {
-//         let attention = await find(details.url, (url, minit) => {
-//             let res = url.length * 0.1111 >= minit;
-//             return res;
-//         });
-//         console.log(details.url, attention);
-//         return { cancel: attention };
-//     },
-//     { urls: ["<all_urls>"] },
-//     ["blocking"]
-// );
-
-// async function catchUrl(id, change, tab) {
-//     let URL = tab.url;
-//     let attention = await find(URL, (url, minit, first, second) => {
-//         console.log(url);
-//         let res = (first.length + second.length) * 0.333 >= minit;
-//         return { url: second + '.' + first, danger: res };
-//     });
-//     console.log(attention);
-//     async function listen(details) {
-//         console.log(attention.danger);
-//         return { cancel: attention.danger };
-//     }
-//     await chrome.webRequest.onBeforeRequest.addListener(
-//         listen,
-//         { urls: ["*" + attention.url + "/"] },
-//         ["blocking"]
-//     );
-// }
-// =========================================================================
-
 async function userConfirm(url, id, suppose) {
     let projSec_extension_respose = confirm(`Please check URL link you are trying to connect to. I suppose it's wrong and you're going to get to ${suppose}. Do you want stay on this page?`);
     chrome.runtime.sendMessage({ id: id, url: url, projSec_extension_respose: projSec_extension_respose });
