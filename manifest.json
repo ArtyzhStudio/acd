@@ -15,15 +15,10 @@
         "activeTab",
         "background",
         "scripting",
-        "storage"
+        "storage",
+        "unlimitedStorage"
     ],
     "host_permissions": [
         "<all_urls>"
-    ],
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "artyzh@inbox.ru",
-            "strict_min_version": "42.0"
-        }
-    }
+    ]
 }

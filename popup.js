@@ -1,7 +1,7 @@
 btn.addEventListener("click", main);
 
 function print(text) {
-    idid.innerHTML = `<h1>${text}</h1>`;
+    output.innerHTML = `<h1>${text}</h1>`;
 }
 
 function main() {

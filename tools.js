@@ -77,27 +77,32 @@ async function find(target, callback) {
 async function comparation(url1, url2) {
     let xhr = new XMLHttpRequest();
     xhr.open("GET", url1, false);
-    //xhr.responseType = 'document';
     xhr.send();
     let doc1 = xhr.responseText;
-    //xhr.open("GET", url2, false);
-    //xhr.send();
-    //let doc2 = xhr.responseXML;
-    //console.log(doc1);
-    e = getStyles(doc1)
-    return e;
-    //console.log(doc2);
+    xhr.open("GET", url2, false);
+    xhr.send();
+    let doc2 = xhr.responseText;
+    let st1 = getStyles(doc1).sort();
+    let st2 = getStyles(doc2).sort();
+
+    return st1;
 }
 
 function getStyles(string) {
     let dom = (new DOMParser()).parseFromString(string, "text/html");
-    console.log(typeof dom);
     let styles = [];
     dom.querySelectorAll("[style]").forEach(e => {
-        styles = [...styles, ...e.getAttribute("style").split(';')];
+        let st = e.getAttribute("style").split(';').flat();
+        st = st.map(r => r.trim());
+        st = st.filter(r => r !== "");
+        styles = [...styles, ...st];
     });
     dom.querySelectorAll("style").forEach(e => {
-        styles = [...styles, ...e.innerHTML.match(/\{.+?\}/sgi).map(r => r.slice(1, r.length - 1).split(";").flat()).flat()]
+        let st = e.innerHTML.match(/\{.+?\}/sgi);
+        st = st.map(r => r.slice(1, r.length - 1).split(";")).flat();
+        st = st.map(r => r.trim());
+        st = st.filter(r => r !== "");
+        styles = [...styles, ...st]
     });
     return styles;
 }

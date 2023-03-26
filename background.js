@@ -74,19 +74,19 @@ async function find(target, callback, trust = {}) {
     return callback(url, minit, first, second);
 }
 
-function print(url, minit) {
-    alert(`${url}, ${minit}`);
-}
+// function print(url, minit) {
+//     alert(`${url}, ${minit}`);
+// }
 
-function init(item) {
-    let target = item.url;
-    find(target, print);
-}
+// function init(item) {
+//     let target = item.url;
+//     find(target, print);
+// }
 
 var trust = {};
 chrome.storage.local.get(callback = (e) => trust = e);
 
-async function userConfirm(url, id, suppose) {
+function userConfirm(url, id, suppose) {
     let projSec_extension_respose = confirm(`Please check URL link you are trying to connect to. I suppose it's wrong and you're going to get to ${suppose}. Do you want stay on this page?`);
     chrome.runtime.sendMessage({ id: id, url: url, projSec_extension_respose: projSec_extension_respose });
     //return { "id": id, "url": url, "projSec_extension_respose": projSec_extension_respose };
