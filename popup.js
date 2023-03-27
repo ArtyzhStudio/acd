@@ -1,11 +1,17 @@
-btn.addEventListener("click", main);
+let onoff = document.getElementById("onoff");
 
-function print(text) {
-    output.innerHTML = `<h1>${text}</h1>`;
-}
+chrome.runtime.sendMessage({ "type": "turn", "method": "get" })
+    .then(e => onoff.checked = e.state);
 
-function main() {
-    comparation(url1.value, url2.value).then(e => {
-        console.log(e);
-    });
-}
+onoff.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ "type": "turn", "method": "change" })
+        .then(e => onoff.checked = e.state);
+});
+
+
+chrome.runtime.onMessage.addEventListener(mes => {
+    if (mes.type !== "turning")
+        return;
+    onoff.checked = mes.state;
+    console.log(onoff.checked);
+});

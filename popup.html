@@ -5,14 +5,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Document</title>
-    <script src="tools.js"></script>
+    <link rel="stylesheet" href="popup.css">
 </head>
 
 <body>
-    <div id="output"></div>
-    <input type="text" id="url1" />
-    <input type="text" id="url2" />
-    <button id="btn">Искать</button>
+    <header>
+        <img src="icon32.png" alt="ACD" height="100" width="100">
+    </header>
+    <div id="content">
+        <h1>Anti Clone Defender</h1>
+        <div id="turn">
+            <h3>OFF</h3>
+            <div class="checkbox-wrapper" id="switch">
+                <input class="tgl tgl-flat" id="onoff" type="checkbox" readonly>
+                <label class="tgl-btn" for="onoff"></label>
+            </div>
+            <h3>ON</h3>
+        </div>
+        <button id="bwlists">Manage black and white lists</button>
+    </div>
     <script src="popup.js"></script>
 </body>
 
