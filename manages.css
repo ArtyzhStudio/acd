@@ -1,0 +1,38 @@
+body {
+    background-color: black;
+    color: aliceblue;
+    margin: 0px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+}
+
+header {
+    width: 100%;
+    background: linear-gradient(#00ff00, #000000);
+    border-bottom: 2px solid #444444;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+header img {
+    margin: 10px;
+}
+
+#content {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+table {
+    border: none;
+}
+
+tr+.close {
+    visibility: hidden;
+}
+
+tr:hover+.close {
+    visibility: visible;
+}

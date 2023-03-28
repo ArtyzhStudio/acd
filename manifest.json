@@ -1,13 +1,18 @@
 {
     "manifest_version": 3,
-    "name": "Project InfoSec",
-    "description": "Finds most likely url from history",
+    "name": "Anti Clone Defender",
+    "description": "Protects you from clone phishing attacks",
     "version": "1.0",
     "action": {
         "default_popup": "popup.html"
     },
     "background": {
         "service_worker": "background.js"
+    },
+    "icons": {
+        "16": "./icon16.png",
+        "32": "./icon32.png",
+        "128": "./icon128.png"
     },
     "permissions": [
         "history",

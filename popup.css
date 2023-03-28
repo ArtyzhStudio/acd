@@ -4,6 +4,7 @@ body {
     background-color: black;
     color: aliceblue;
     margin: 0px;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 header {
@@ -15,14 +16,18 @@ header {
 
 #content {
     padding: 5px;
+    text-align: center;
 }
 
 #turn {
-    width: 100%;
     display: flex;
     justify-content: space-evenly;
+    margin: 1em;
 }
 
+h3 {
+    margin: 0px;
+}
 
 .checkbox-wrapper .tgl {
     display: none;
@@ -111,4 +116,29 @@ header {
 .checkbox-wrapper .tgl-flat:checked+.tgl-btn:after {
     left: 50%;
     background: #00ff00;
+}
+
+#manuals {
+    text-decoration: none;
+}
+
+#bwlists,
+#manuals {
+    height: 3em;
+    width: 80%;
+    margin: 10px;
+    background: inherit;
+    border: 1px solid #ffffff;
+    border-radius: 1em;
+    align-self: center;
+    color: aliceblue;
+    font-size: 16px;
+    box-shadow: 0 0 5px #f2f2f2;
+    transition: all 0.2s;
+}
+
+#bwlists:hover,
+#manuals:hover {
+    cursor: pointer;
+    box-shadow: 0 0 10px #f2f2f2;
 }

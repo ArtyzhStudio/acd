@@ -446,16 +446,7 @@ function phoneticTranslate(str, lang = "ru", target = "en") {
     return res.join("");
 }
 
-// function print(url, minit) {
-//     alert(`${url}, ${minit}`);
-// }
-
-// function init(item) {
-//     let target = item.url;
-//     find(target, print);
-// }
-
-var workingState = false;
+var workingState = true;
 chrome.runtime.sendMessage({ "type": "turning", "state": workingState });
 
 var trust = {};
@@ -496,6 +487,48 @@ async function catchUrlAndConfirm(id, change, tab) {
             }
         );
     }
+}
+
+function updateBL() {
+    let blacklist = "";
+    for (let i = 0; i < trust.untrusted?.length; i++) {
+        blacklist += `<tr>
+    <td>${trust.untrusted[i]}</td>
+    <td class="close">
+        <button class="btn" onclick="removeFromBlack(${i})">X</button>
+    </td>
+</tr>`;
+    }
+    blacklist += `<tr>
+    <td>
+        <input type="text" id="newBlack">
+    </td>
+    <td class="close">
+        <button class="btn" onclick="addBlack">+</button>
+    </td>
+</tr>`;
+    return blacklist;
+}
+
+function updateWL() {
+    let whitelist = "";
+    for (let i = 0; i < trust.trusted?.length; i++) {
+        whitelist += `<tr>
+    <td>${trust.trusted[i]}</td>
+    <td class="close">
+        <button class="btn" onclick="removeFromWhite(${i})">X</button>
+    </td>
+</tr>`;
+    }
+    whitelist += `<tr>
+    <td>
+        <input type="text" id="newWhite">
+    </td>
+    <td class="close">
+        <button class="btn" onclick="addWhite">+</button>
+    </td>
+</tr>`;
+    return whitelist;
 }
 
 chrome.tabs.onUpdated.addListener(
@@ -550,4 +583,36 @@ chrome.runtime.onMessage.addListener((mes, sender, response) => {
         console.log(workingState);
         response({ "type": "turning", "state": workingState });
     }
+});
+
+chrome.runtime.onMessage.addListener((mes, sender, response) => {
+    if (mes.type !== "list")
+        return;
+    if (mes.method === "get") {
+        console.log("get manages worked")
+        let result = "";
+        if (mes.target === "black") {
+            result = updateBL();
+        } else {
+            result = updateWL();
+        }
+        console.log(result);
+        response({ "type": "listing", "response": result });
+    } else {
+        if (mes.target === "black") {
+            trust.untrusted.push(mes.url)
+        } else {
+            trust.trusted.push(mes.url)
+        }
+        response("success");
+    }
+});
+
+chrome.runtime.onMessage.addListener((mes, sender, response) => {
+    if (mes.type !== "open")
+        return;
+    chrome.tabs.create({
+        "url": mes.target,
+        "active": true
+    });
 });
