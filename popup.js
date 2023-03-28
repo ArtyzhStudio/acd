@@ -11,12 +11,5 @@ bwlists.addEventListener("click", () => {
 });
 
 github.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ "type": "open", "target": "https://github.com/ArtyzhStudio/form-filler" });
+    chrome.runtime.sendMessage({ "type": "open", "target": "https://github.com/ArtyzhStudio/acd" });
 });
-
-// chrome.runtime.onMessage.addEventListener(mes => {
-//     if (mes.type !== "turning")
-//         return;
-//     onoff.checked = mes.state;
-//     console.log(onoff.checked);
-// });
