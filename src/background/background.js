@@ -87,14 +87,17 @@ function userConfirm(url, id, suppose) {
     chrome.runtime.sendMessage({ "type": "userconfirm", "id": id, "url": url, "projSec_extension_respose": projSec_extension_respose });
 }
 
+function userConfirmBlackList(url, id) {
+    let projSec_extension_respose = confirm("Please check URL link you are trying to connect to. It's in your black list. Do you want to stay on this page and remove it from black list?");
+    chrome.runtime.sendMessage({ "type": "userconfirm", "id": id, "url": url, "projSec_extension_respose": projSec_extension_respose });
+}
+
 async function catchUrlAndConfirm(id, change, tab) {
     if (workingState === false)
         return;
     let URL = tab.url;
     let attention = await find(URL, (minit, first, second, first2, second2) => {
-        console.log("====" + second2 + '.' + first2);
-        console.log(second + '.' + first);
-        let res = (second.length + second2.length) * (1 / 6) >= minit;
+        let res = Math.ceil((second.length + second2.length) / 9) >= minit;
         return { "url": second + '.' + first, "danger": res, "suppose": second2 + '.' + first2 };
     }, trust);
     console.log(trust);
@@ -105,6 +108,14 @@ async function catchUrlAndConfirm(id, change, tab) {
     if (trust.untrusted?.includes(attention.url)) {
         console.log(2);
         attention.danger = true;
+        console.log(attention);
+        chrome.scripting.executeScript(
+            {
+                "target": { tabId: id, frameIds: [0] },
+                "func": userConfirmBlackList,
+                "args": [attention.url, id]
+            }
+        );
     }
     console.log(attention);
     if (attention.danger) {
@@ -176,9 +187,9 @@ function updateBL() {
     let blacklist = "";
     for (let i = 0; i < trust.untrusted?.length; i++) {
         blacklist += `<tr>
-    <td>${trust.untrusted[i]}</td>
+    <td id="burl${i}">${trust.untrusted[i]}</td>
     <td class="close">
-        <button class="btn" onclick="removeFromBlack(${i})">X</button>
+        <button class="btn burl" onclick="removeFromBlack(${i})">X</button>
     </td>
 </tr>`;
     }
@@ -197,9 +208,9 @@ function updateWL() {
     let whitelist = "";
     for (let i = 0; i < trust.trusted?.length; i++) {
         whitelist += `<tr>
-    <td>${trust.trusted[i]}</td>
+    <td id="wurl${i}">${trust.trusted[i]}</td>
     <td class="close">
-        <button class="btn" onclick="removeFromWhite(${i})">X</button>
+        <button class="btn wurl" onclick="removeFromWhite(${i})">X</button>
     </td>
 </tr>`;
     }
@@ -225,22 +236,42 @@ chrome.runtime.onMessage.addListener((mes, sender, response) => {
         } else {
             result = updateWL();
         }
-        console.log(result);
         response({ "type": "listing", "response": result });
-    } else {
+    } else if (mes.method === "set") {
         console.log("set manages worked")
         if (mes.target === "black") {
             if (!trust.hasOwnProperty("untrusted")) {
                 trust.untrusted = [];
             }
-            trust.untrusted.push(mes.url)
-            response({ "type": "listing", "response": "success", "payload": updateBL() });
+            trust.untrusted.push(mes.url);
+            if (trust.trusted?.includes(mes.url)) {
+                trust.trusted.splice(trust.trusted.indexOf(mes.url), 1);
+            }
+            response({ "type": "listing", "response": "success" });
         } else {
             if (!trust.hasOwnProperty("trusted")) {
                 trust.trusted = [];
             }
-            trust.trusted.push(mes.url)
-            response({ "type": "listing", "response": "success", "payload": updateWL() });
+            trust.trusted.push(mes.url);
+            if (trust.untrusted?.includes(mes.url)) {
+                trust.untrusted.splice(trust.untrusted.indexOf(mes.url), 1);
+            }
+            response({ "type": "listing", "response": "success" });
+        }
+        console.log(trust);
+        chrome.storage.local.set(trust);
+    } else { // mes.method === "del"
+        console.log("del manages worked")
+        if (mes.target === "black") {
+            if (trust.untrusted?.includes(mes.url)) {
+                trust.untrusted.splice(trust.untrusted.indexOf(mes.url), 1);
+            }
+            response({ "type": "listing", "response": "success" });
+        } else {
+            if (trust.trusted?.includes(mes.url)) {
+                trust.trusted.splice(trust.trusted.indexOf(mes.url), 1);
+            }
+            response({ "type": "listing", "response": "success" });
         }
         console.log(trust);
         chrome.storage.local.set(trust);
