@@ -4,15 +4,15 @@
     "description": "Protects you from clone phishing attacks",
     "version": "1.0",
     "action": {
-        "default_popup": "popup.html"
+        "default_popup": "./src/popup/popup.html"
     },
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "./src/background/background.js"
     },
     "icons": {
-        "16": "./icon16.png",
-        "32": "./icon32.png",
-        "128": "./icon128.png"
+        "16": "./src/images/icon16.png",
+        "32": "./src/images/icon32.png",
+        "128": "./src/images/icon128.png"
     },
     "permissions": [
         "history",

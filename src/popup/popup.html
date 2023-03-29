@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./popup.css">
+</head>
+
+<body>
+    <div id="github" style="cursor:pointer;background-color: #a00;overflow: hidden;white-space: nowrap;position: absolute;right: -50px;bottom: 40px;
+-webkit-transform: rotate(315deg);-moz-transform: rotate(315deg);-ms-transform: rotate(315deg);-o-transform: rotate(315deg);
+transform: rotate(315deg);-webkit-box-shadow: 0 0 10px #888;-moz-box-shadow: 0 0 10px #888;
+box-shadow: 0 0 10px #888;">
+        <p style="border: 1px solid #faa;color: #fff;display: block;
+  font: bold 81.25% 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 1px 0;padding: 10px 50px;text-align: center;
+  text-decoration: none;text-shadow: 0 0 5px #444;">Fork me on GitHub</p>
+    </div>
+    <header>
+        <img src="../images/icon.png" alt="ACD" height="100" width="100">
+    </header>
+    <div id="content">
+        <h1>Anti Clone Defender</h1>
+        <div id="turn">
+            <h3>OFF</h3>
+            <div class="checkbox-wrapper" id="switch">
+                <input class="tgl tgl-flat" id="onoff" type="checkbox" readonly>
+                <label class="tgl-btn" for="onoff"></label>
+            </div>
+            <h3>ON</h3>
+        </div>
+        <button id="bwlists">Manage black and white lists</button>
+        <a href="**manuals**"><button id="manuals">User manuals</button></a>
+    </div>
+    <script src="./popup.js"></script>
+</body>
+
+</html>
