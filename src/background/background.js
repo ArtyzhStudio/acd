@@ -187,7 +187,7 @@ function updateBL() {
         <input type="text" id="newBlack">
     </td>
     <td class="close">
-        <button class="btn" onclick="addBlack">+</button>
+        <button id="newBlackSubbmit" class="btn" onclick="addBlack">+</button>
     </td>
 </tr>`;
     return blacklist;
@@ -208,7 +208,7 @@ function updateWL() {
         <input type="text" id="newWhite">
     </td>
     <td class="close">
-        <button class="btn" onclick="addWhite">+</button>
+        <button id="newWhiteSubbmit" class="btn" onclick="addWhite">+</button>
     </td>
 </tr>`;
     return whitelist;
@@ -228,12 +228,22 @@ chrome.runtime.onMessage.addListener((mes, sender, response) => {
         console.log(result);
         response({ "type": "listing", "response": result });
     } else {
+        console.log("set manages worked")
         if (mes.target === "black") {
+            if (!trust.hasOwnProperty("untrusted")) {
+                trust.untrusted = [];
+            }
             trust.untrusted.push(mes.url)
+            response({ "type": "listing", "response": "success", "payload": updateBL() });
         } else {
+            if (!trust.hasOwnProperty("trusted")) {
+                trust.trusted = [];
+            }
             trust.trusted.push(mes.url)
+            response({ "type": "listing", "response": "success", "payload": updateWL() });
         }
-        response("success");
+        console.log(trust);
+        chrome.storage.local.set(trust);
     }
 });
 
