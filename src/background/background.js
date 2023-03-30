@@ -25,55 +25,62 @@ function Damerau_Levenshtejn(s1, s2) {
     return d[lenstr1][lenstr2] - 1;
 }
 
-function getDomains(url) {
-    let ind = url.indexOf('//');
+function getClearUrl(urll, c) {
+    let ind = c;
     if (ind === -1)
         ind = -2;
     let dom = "";
-    for (let i = ind + 2; i < url.length && url[i] != '/'; i++)
-        dom += url[i];
+    for (let i = ind + 2; i < urll.length && urll[i] != '/'; i++)
+        dom += urll[i];
+    if (dom.slice(0, 4) === "www.")
+        dom = dom.slice(4);
+    return dom;
+}
+
+function getDomains(urll) {
+    let c = urll.indexOf('//');
+    let dom = getClearUrl(urll, c);
     let flag = 0;
-    let res = ["", ""];
-    for (let i = dom.length - 1; i >= 0 && flag < 2; i--) {
-        if (dom[i] === '.')
+    let res = [""];
+    for (let i = dom.length - 1; i >= 0; i--) {
+        if (dom[i] === '.') {
             flag++;
-        else
+            res.push("");
+        } else {
             res[flag] = dom[i] + res[flag];
+        }
     }
     return res;
 }
 
 async function find(target, callback, trust = {}) {
-    let [first, second] = getDomains(target);
+    target = getClearUrl(target, target.indexOf('//'));
+    if (target.indexOf('.') === -1)
+        return callback(1000000000000000, target, "");
 
     let minit = 1000000000000000;
     let oneYearAgo = 3600 * 24 * 366;
-    //console.log(`${second}:${first}`);
     let historyItems = await chrome.history.search({
         "text": '',
         "maxResults": 100,
         "startTime": oneYearAgo
     });
 
-    let first2 = "";
-    let second2 = "";
-    //console.log(historyItems.length);
+    let suppose = "";
     for (let j = 0; j < historyItems.length; j++) {
         let i = historyItems[j];
 
-        let [ifirst, isecond] = getDomains(i.url);
-        if ((first === ifirst && isecond === second) || i.url.slice(0, 5) === "file:" || second === "" || trust.untrusted?.includes(isecond + '.' + ifirst))
+        i.url = getClearUrl(i.url, i.url.indexOf('//'));
+        if (i.url.indexOf('.') === -1 || i.url.slice(0, 5) === "file:" || trust.untrusted?.includes(i.url))
             continue;
-        let dim = Damerau_Levenshtejn(second, isecond);
-        //console.log(`${isecond}:${ifirst}, ${i.url}, ${dim}`);
-        if (dim < minit) {
-            first2 = ifirst;
-            second2 = isecond;
+        let dim = Damerau_Levenshtejn(target, i.url);
+
+        if (dim !== 0 && dim < minit) {
+            suppose = i.url;
             minit = dim;
         }
     }
-    //console.log(`${url}, ${minit}`);
-    return callback(minit, first, second, first2, second2);
+    return callback(minit, target, suppose);
 }
 
 var workingState = true;
@@ -96,32 +103,32 @@ async function catchUrlAndConfirm(id, change, tab) {
     if (workingState === false)
         return;
     let URL = tab.url;
-    let attention = await find(URL, (minit, first, second, first2, second2) => {
-        let res = Math.ceil((second.length + second2.length) / 9) >= minit;
-        return { "url": second + '.' + first, "danger": res, "suppose": second2 + '.' + first2 };
+    let attention = await find(URL, (minit, target, suppose) => {
+        console.log(minit);
+        let res = Math.ceil((target.length + suppose.length) / 8) >= minit;
+        return { "url": target, "danger": res, "suppose": suppose };
     }, trust);
     console.log(trust);
     if (trust.trusted?.includes(attention.url)) {
-        console.log(2);
         attention.danger = false;
     }
     if (trust.untrusted?.includes(attention.url)) {
-        console.log(2);
         attention.danger = true;
         console.log(attention);
         chrome.scripting.executeScript(
             {
-                "target": { tabId: id, frameIds: [0] },
+                "target": { tabId: id },
                 "func": userConfirmBlackList,
                 "args": [attention.url, id]
             }
         );
+        return;
     }
     console.log(attention);
     if (attention.danger) {
         chrome.scripting.executeScript(
             {
-                "target": { tabId: id, frameIds: [0] },
+                "target": { tabId: id },
                 "func": userConfirm,
                 "args": [attention.url, id, attention.suppose]
             }
