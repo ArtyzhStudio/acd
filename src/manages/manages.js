@@ -59,7 +59,7 @@ function addWhite() {
 function removeFromBlack(ind) {
     let cur = document.getElementById("burl" + String(ind));
     chrome.runtime.sendMessage({ "type": "list", "method": "del", "target": "black", "url": cur.innerText }).then(e => {
-        console.log("set response arrived");
+        console.log("det response arrived");
         console.log(e);
         if (e.response === "success")
             updateBlack();

@@ -250,18 +250,18 @@ chrome.runtime.onMessage.addListener((mes, sender, response) => {
             if (!trust.hasOwnProperty("untrusted")) {
                 trust.untrusted = [];
             }
-            trust.untrusted.push(mes.url);
-            if (trust.trusted?.includes(mes.url)) {
-                trust.trusted.splice(trust.trusted.indexOf(mes.url), 1);
+            trust.untrusted.push(getClearUrl(mes.url, mes.url.indexOf('//')));
+            if (trust.trusted?.includes(getClearUrl(mes.url, mes.url.indexOf('//')))) {
+                trust.trusted.splice(trust.trusted.indexOf(getClearUrl(mes.url, mes.url.indexOf('//'))), 1);
             }
             response({ "type": "listing", "response": "success" });
         } else {
             if (!trust.hasOwnProperty("trusted")) {
                 trust.trusted = [];
             }
-            trust.trusted.push(mes.url);
-            if (trust.untrusted?.includes(mes.url)) {
-                trust.untrusted.splice(trust.untrusted.indexOf(mes.url), 1);
+            trust.trusted.push(getClearUrl(mes.url, mes.url.indexOf('//')));
+            if (trust.untrusted?.includes(getClearUrl(mes.url, mes.url.indexOf('//')))) {
+                trust.untrusted.splice(trust.untrusted.indexOf(getClearUrl(mes.url, mes.url.indexOf('//'))), 1);
             }
             response({ "type": "listing", "response": "success" });
         }
@@ -270,13 +270,13 @@ chrome.runtime.onMessage.addListener((mes, sender, response) => {
     } else { // mes.method === "del"
         console.log("del manages worked")
         if (mes.target === "black") {
-            if (trust.untrusted?.includes(mes.url)) {
-                trust.untrusted.splice(trust.untrusted.indexOf(mes.url), 1);
+            if (trust.untrusted?.includes(getClearUrl(mes.url, mes.url.indexOf('//')))) {
+                trust.untrusted.splice(trust.untrusted.indexOf(getClearUrl(mes.url, mes.url.indexOf('//'))), 1);
             }
             response({ "type": "listing", "response": "success" });
         } else {
-            if (trust.trusted?.includes(mes.url)) {
-                trust.trusted.splice(trust.trusted.indexOf(mes.url), 1);
+            if (trust.trusted?.includes(getClearUrl(mes.url, mes.url.indexOf('//')))) {
+                trust.trusted.splice(trust.trusted.indexOf(getClearUrl(mes.url, mes.url.indexOf('//'))), 1);
             }
             response({ "type": "listing", "response": "success" });
         }
