@@ -12,8 +12,8 @@ function updateBlack() {
         newBlack = document.getElementById("newBlack");
         newBlackSubbmit = document.getElementById("newBlackSubbmit");
         newBlackSubbmit.addEventListener("click", addBlack);
-        newBlackSubbmit.addEventListener("keydown", () => {
-            if (e.keyCode === 13) addBlack();
+        newBlack.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") addBlack();
         });
     });
 }
@@ -26,8 +26,8 @@ function updateWhite() {
         newWhite = document.getElementById("newWhite");
         newWhiteSubbmit = document.getElementById("newWhiteSubbmit");
         newWhiteSubbmit.addEventListener("click", addWhite);
-        newWhiteSubbmit.addEventListener("keydown", () => {
-            if (e.code === "Enter") addWhite();
+        newWhite.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") addWhite();
         });
     });
 }

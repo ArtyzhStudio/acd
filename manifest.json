@@ -21,7 +21,8 @@
         "background",
         "scripting",
         "storage",
-        "unlimitedStorage"
+        "unlimitedStorage",
+        "contextMenus"
     ],
     "host_permissions": [
         "<all_urls>"

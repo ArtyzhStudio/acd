@@ -71,11 +71,11 @@ async function find(target, callback, trust = {}) {
         let i = historyItems[j];
 
         i.url = getClearUrl(i.url, i.url.indexOf('//'));
-        if (i.url.indexOf('.') === -1 || i.url.slice(0, 5) === "file:" || trust.untrusted?.includes(i.url))
+        if (i.url.indexOf('.') === -1 || i.url === target || i.url.slice(0, 5) === "file:" || trust.untrusted?.includes(i.url))
             continue;
-        let dim = Damerau_Levenshtejn(target, i.url);
+        let dim = Damerau_Levenshtejn(target.slice(0, target.lastIndexOf('.')), i.url.slice(0, i.url.lastIndexOf('.')));
 
-        if (dim !== 0 && dim < minit) {
+        if (dim < minit) {
             suppose = i.url;
             minit = dim;
         }
@@ -83,11 +83,60 @@ async function find(target, callback, trust = {}) {
     return callback(minit, target, suppose);
 }
 
+async function initContextMenu() {
+    await chrome.contextMenus.create({
+        "id": "1",
+        "title": "Anti Clone defender :: Add page to lists",
+        "type": "normal",
+        "contexts": ["all"]
+    });
+    await chrome.contextMenus.create({
+        "id": "2",
+        "title": "Add to black list",
+        "parentId": "1",
+        "type": "normal",
+        "contexts": ["all"]
+    });
+
+    await chrome.contextMenus.create({
+        "id": "3",
+        "title": "Add to white list",
+        "parentId": "1",
+        "type": "normal",
+        "contexts": ["all"]
+    });
+    chrome.contextMenus.onClicked.addListener((data, tab) => {
+        if (data.menuItemId === "2") {
+            if (!trust.hasOwnProperty("untrusted")) {
+                trust.untrusted = [];
+            }
+            trust.untrusted.push(getClearUrl(tab.url, tab.url.indexOf('//')));
+            if (trust.trusted?.includes(getClearUrl(tab.url, tab.url.indexOf('//')))) {
+                trust.trusted.splice(trust.trusted.indexOf(getClearUrl(tab.url, tab.url.indexOf('//'))), 1);
+            }
+            chrome.storage.local.set(trust);
+        } else if (data.menuItemId === "3") {
+            if (!trust.hasOwnProperty("trusted")) {
+                trust.trusted = [];
+            }
+            trust.trusted.push(getClearUrl(tab.url, tab.url.indexOf('//')));
+            if (trust.untrusted?.includes(getClearUrl(tab.url, tab.url.indexOf('//')))) {
+                trust.untrusted.splice(trust.untrusted.indexOf(getClearUrl(tab.url, tab.url.indexOf('//'))), 1);
+            }
+            chrome.storage.local.set(trust);
+        }
+    })
+}
+
 var workingState = true;
 chrome.runtime.sendMessage({ "type": "turning", "state": workingState });
 
 var trust = {};
 chrome.storage.local.get(callback = (e) => trust = e);
+
+chrome.runtime.onInstalled.addListener(initContextMenu);
+
+var flag_injected = false;
 
 function userConfirm(url, id, suppose) {
     let projSec_extension_respose = confirm(`Please check URL link you are trying to connect to. It might be wrong and you supposed to get to ${suppose}. Do you want to stay on this page?`);
@@ -115,10 +164,13 @@ async function catchUrlAndConfirm(id, change, tab) {
     if (trust.untrusted?.includes(attention.url)) {
         attention.danger = true;
         console.log(attention);
+        if (flag_injected) return;
+        flag_injected = true;
         chrome.scripting.executeScript(
             {
-                "target": { tabId: id },
+                "target": { "tabId": id },
                 "func": userConfirmBlackList,
+                "injectImmediately": true,
                 "args": [attention.url, id]
             }
         );
@@ -126,10 +178,13 @@ async function catchUrlAndConfirm(id, change, tab) {
     }
     console.log(attention);
     if (attention.danger) {
+        if (flag_injected) return;
+        flag_injected = true;
         chrome.scripting.executeScript(
             {
-                "target": { tabId: id },
+                "target": { "tabId": id },
                 "func": userConfirm,
+                "injectImmediately": true,
                 "args": [attention.url, id, attention.suppose]
             }
         );
@@ -175,6 +230,7 @@ chrome.runtime.onMessage.addListener(mes => {
         }
     }
     console.log(trust);
+    flag_injected = false;
     chrome.storage.local.set(trust);
 });
 
