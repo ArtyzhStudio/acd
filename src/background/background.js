@@ -107,6 +107,8 @@ async function initContextMenu() {
     });
     chrome.contextMenus.onClicked.addListener((data, tab) => {
         if (data.menuItemId === "2") {
+            if (trust.untrusted?.includes(getClearUrl(tab.url, tab.url.indexOf('//'))))
+                return;
             if (!trust.hasOwnProperty("untrusted")) {
                 trust.untrusted = [];
             }
@@ -116,6 +118,8 @@ async function initContextMenu() {
             }
             chrome.storage.local.set(trust);
         } else if (data.menuItemId === "3") {
+            if (trust.trusted?.includes(getClearUrl(tab.url, tab.url.indexOf('//'))))
+                return;
             if (!trust.hasOwnProperty("trusted")) {
                 trust.trusted = [];
             }
@@ -252,7 +256,7 @@ function updateBL() {
         blacklist += `<tr>
     <td id="burl${i}">${trust.untrusted[i]}</td>
     <td class="close">
-        <button class="btn burl" onclick="removeFromBlack(${i})">X</button>
+        <button class="btn burl" onclick="removeFromBlack(${i})">×</button>
     </td>
 </tr>`;
     }
@@ -273,7 +277,7 @@ function updateWL() {
         whitelist += `<tr>
     <td id="wurl${i}">${trust.trusted[i]}</td>
     <td class="close">
-        <button class="btn wurl" onclick="removeFromWhite(${i})">X</button>
+        <button class="btn wurl" onclick="removeFromWhite(${i})">×</button>
     </td>
 </tr>`;
     }

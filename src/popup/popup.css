@@ -5,6 +5,7 @@ body {
     color: aliceblue;
     margin: 0px;
     font-family: 'Courier New', Courier, monospace;
+    border: 2px solid #00FF00;
 }
 
 header {
